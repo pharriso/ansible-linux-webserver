@@ -1,0 +1,39 @@
+---
+
+- name: Install httpd
+  yum:
+    name: httpd
+    state: installed
+
+- name: Start and enable httpd
+  service:
+    name: httpd
+    state: started
+    enabled: yes
+
+- name: Check if firewalld is running
+  shell: systemctl is-active firewalld
+  register: firewall_status
+  ignore_errors: true
+
+- name: Open firewall ports for httpd
+  firewalld:
+    port: 80/tcp
+    permanent: true
+    state: enabled
+    immediate: true
+  when: firewall_status.stdout == 'active'
+
+- name: Configure Web Content
+  template: 
+    dest: /var/www/html/index.html 
+    src: index.html.j2
+  notify:
+    - restart httpd
+
+- name: Downgrade sudo to test Insights
+  yum:
+    name: sudo-1.8.6p7-21.el7_3.x86_64
+    state: present
+    allow_downgrade: true
+
