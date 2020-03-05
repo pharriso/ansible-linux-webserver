@@ -14,7 +14,9 @@
 - name: check if firewalld is running
   shell: systemctl is-active firewalld
   register: firewall_status
-  ignore_errors: true
+  changed_when: false
+  failed_when: "'inactive' not in firewall_status.stdout and firewall_status.rc != 0"
+
 
 - name: open firewall ports for httpd
   firewalld:
