@@ -26,7 +26,7 @@
 
 - name: configure web content
   template: 
-    dest: /var/www/html/index.html 
+    dest: /srv/www/htdocs/index.html 
     src: index.html.j2
   notify:
     - restart apache
