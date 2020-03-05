@@ -1,0 +1,32 @@
+---
+
+- name: install apache on suse
+  zypper:
+    name: httpd
+    state: installed
+
+- name: start and enable httpd
+  service:
+    name: apache2
+    state: started
+    enabled: yes
+
+- name: check if firewalld is running
+  shell: systemctl is-active firewalld
+  register: firewall_status
+  ignore_errors: true
+
+- name: open firewall ports for httpd
+  firewalld:
+    port: 80/tcp
+    permanent: true
+    state: enabled
+    immediate: true
+  when: firewall_status.stdout == 'active'
+
+- name: configure web content
+  template: 
+    dest: /var/www/html/index.html 
+    src: index.html.j2
+  notify:
+    - restart apache
