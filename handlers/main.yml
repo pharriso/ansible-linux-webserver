@@ -4,3 +4,8 @@
   service:
     name: httpd
     state: restarted
+
+- name: restart apache
+  zypper:
+    name: apache2
+    state: restarted
